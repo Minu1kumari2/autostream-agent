@@ -1,0 +1,14 @@
+# AutoStream Agent — Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core LLM & Agent framework
+langchain>=0.3.0
+langchain-google-genai>=2.0.0
+langchain-core>=0.3.0
+langgraph>=0.2.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# Type hints (Python 3.9 compatibility)
+typing-extensions>=4.9.0
