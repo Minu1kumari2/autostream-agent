@@ -2,7 +2,7 @@
 
 > **ServiceHive / Inflx — Machine Learning Intern Assignment**
 
-A production-grade conversational AI agent that converts social media conversations into qualified business leads, built with **LangGraph**, **Claude 3 Haiku**, and a local RAG pipeline.
+A production-grade conversational AI agent that converts social media conversations into qualified business leads, built with **LangGraph**, **Gemini 2.0 Flash**, and a local RAG pipeline.
 
 ---
 
@@ -105,12 +105,12 @@ The local knowledge base is stored in `knowledge_base/autostream_kb.json`. The `
 ### Prerequisites
 
 - Python 3.9 or higher
-- An Anthropic API key (Claude 3 Haiku)
+- A free Google Gemini API key
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/autostream-agent.git
+git clone https://github.com/Minu1kumari2/autostream-agent.git
 cd autostream-agent
 ```
 
@@ -118,8 +118,13 @@ cd autostream-agent
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate        # macOS / Linux
-.venv\Scripts\activate           # Windows
+```
+```bash
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
 ```
 
 ### 3. Install dependencies
@@ -130,36 +135,51 @@ pip install -r requirements.txt
 
 ### 4. Set your API key
 
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."     # macOS / Linux
-set ANTHROPIC_API_KEY=sk-ant-...          # Windows CMD
-$env:ANTHROPIC_API_KEY="sk-ant-..."       # Windows PowerShell
+> ⚠️ **Note for Evaluators:** This project uses the **Google Gemini API (free tier)** as the LLM provider.
+> The free tier key has limited quota (one-time access per project).
+> If the key is exhausted during testing, please generate a fresh free key in under 1 minute:
+>
+> 1. Go to **https://aistudio.google.com/apikey**
+> 2. Sign in with any Google account
+> 3. Click **"Create API Key"** → **"Create API key in new project"**
+> 4. Copy the key (starts with `AIza...`) and set it as shown below
+>
+> No credit card is required.
+
+**Set the key in your terminal:**
+
+```cmd
+# Windows CMD
+set GOOGLE_API_KEY=AIza...your_key_here
+
+# Windows PowerShell
+$env:GOOGLE_API_KEY="AIza...your_key_here"
+
+# macOS / Linux
+export GOOGLE_API_KEY="AIza...your_key_here"
 ```
 
-Alternatively, create a `.env` file in the project root:
+**Or use a `.env` file (recommended):**
 
+Create a file named `.env` in the project root and add:
 ```
-ANTHROPIC_API_KEY=sk-ant-...
+GOOGLE_API_KEY=AIza...your_key_here
 ```
-
-And add this line at the top of `main.py`:
-
+Then add this line at the top of `main.py`:
 ```python
 from dotenv import load_dotenv; load_dotenv()
 ```
 
 ### 5. Run the agent
 
-**Interactive mode** (type your own messages):
-
-```bash
-python main.py
-```
-
-**Demo / scripted mode** (great for the submission video):
-
+**Demo / scripted mode** (recommended for first run):
 ```bash
 python main.py --demo
+```
+
+**Interactive mode** (live chat):
+```bash
+python main.py
 ```
 
 ---
@@ -195,7 +215,9 @@ autostream-agent/
 ## Example Conversation
 
 ```
-You: Hi, tell me about your pricing.
+Alex: Hi there! 👋 I'm Alex, your AutoStream assistant. How can I help you today?
+
+You: Hi! Tell me about your pricing.
 
 Alex: AutoStream has two plans:
 • Basic ($29/month): 10 videos/month, 720p, email support.
@@ -233,7 +255,7 @@ AutoStream Pro. Welcome aboard — can't wait to see what you create on YouTube!
 
 ## Running Tests
 
-The test suite covers the knowledge base, RAG pipeline, and lead capture tool — **no LLM calls required**.
+The test suite covers the knowledge base, RAG pipeline, and lead capture tool — **no LLM or API key required**.
 
 ```bash
 pip install pytest
@@ -243,13 +265,26 @@ python -m pytest tests/ -v
 Expected output:
 
 ```
-tests/test_agent.py::TestKnowledgeBase::test_kb_loads            PASSED
-tests/test_agent.py::TestKnowledgeBase::test_basic_plan_price    PASSED
-...
-tests/test_agent.py::TestLeadCapture::test_successful_capture    PASSED
-tests/test_agent.py::TestLeadCapture::test_invalid_email_raises  PASSED
-...
-========================= 18 passed in 0.12s =========================
+tests/test_agent.py::TestKnowledgeBase::test_kb_loads                       PASSED
+tests/test_agent.py::TestKnowledgeBase::test_basic_plan_price               PASSED
+tests/test_agent.py::TestKnowledgeBase::test_pro_plan_price                 PASSED
+tests/test_agent.py::TestKnowledgeBase::test_pro_plan_has_4k                PASSED
+tests/test_agent.py::TestKnowledgeBase::test_refund_policy_exists           PASSED
+tests/test_agent.py::TestKnowledgeBase::test_support_policy_pro_only        PASSED
+tests/test_agent.py::TestRAGPipeline::test_pricing_query_returns_plan_info  PASSED
+tests/test_agent.py::TestRAGPipeline::test_pro_query_returns_pro_details    PASSED
+tests/test_agent.py::TestRAGPipeline::test_refund_query_returns_policy      PASSED
+tests/test_agent.py::TestRAGPipeline::test_greeting_returns_company_info    PASSED
+tests/test_agent.py::TestRAGPipeline::test_unknown_query_returns_fallback   PASSED
+tests/test_agent.py::TestLeadCapture::test_successful_capture               PASSED
+tests/test_agent.py::TestLeadCapture::test_print_output                     PASSED
+tests/test_agent.py::TestLeadCapture::test_invalid_email_raises             PASSED
+tests/test_agent.py::TestLeadCapture::test_missing_name_raises              PASSED
+tests/test_agent.py::TestLeadCapture::test_missing_email_raises             PASSED
+tests/test_agent.py::TestLeadCapture::test_missing_platform_raises          PASSED
+tests/test_agent.py::TestLeadCapture::test_result_has_timestamp             PASSED
+tests/test_agent.py::TestLeadCapture::test_result_has_source                PASSED
+===================== 19 passed, 2 skipped in 0.10s ======================
 ```
 
 ---
